@@ -14,6 +14,9 @@ ENV PORT=3000
 ENV INSTANCE_NAME=""
 ENV INSTANCE_HASH=""
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD curl http://localhost:${PORT}/healthz || exit 1
+
 EXPOSE ${PORT}
 
 # Make run.sh executable
