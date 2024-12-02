@@ -14,6 +14,8 @@ ENV PORT=3000
 ENV INSTANCE_NAME=""
 ENV INSTANCE_HASH=""
 
+EXPOSE ${PORT}
+
 # Make run.sh executable
 RUN chmod +x run.sh
 
