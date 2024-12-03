@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dov-deployment
+  namespace: myns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dov-bear
+  template:
+    metadata:
+      labels:
+        app: dov-bear
+        version: v1
+        zone: prod
+    spec:
+      containers:
+      - name: dov-bear
+        image: chukmunnlee/dov-bear:v5
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: INSTANCE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: dov-cm
+              key: INSTANCE_NAME
+        - name: INSTANCE_HASH
+          valueFrom:
+            secretKeyRef:
+              name: dov-secret
+              key: INSTANCE_HASH
+        # - name: INSTANCE_NAME
+        #   value: "My Dov Bear"
+        # - name: INSTANCE_HASH
+        #   valueFrom:
+        #     fieldRef:
+        #       fieldPath: status.podIP
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dov-svc
+  namespace: myns
+  labels:
+    app: dov
+spec:
+  selector:
+    app: dov-bear
+  ports:
+  - name: web
+    protocol: TCP
+    port: 8080
+    targetPort: 3000
+    protocol: TCP
+  type: ClusterIP
