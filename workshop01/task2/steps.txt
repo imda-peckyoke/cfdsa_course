@@ -1,0 +1,4 @@
+1. docker network create mynet
+2. docker volume create northwind-db
+3. docker run -d --name northwind-db -v northwind-db-data:/var/lib/mysql --network mynet stackupiss/northwind-db:v1
+4. docker run -d --name myapp -e DB_HOST=northwind-db --network mynet -p 8080:3000 stackupiss/northwind-app:v1
