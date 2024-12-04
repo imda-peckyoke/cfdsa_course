@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: code-server-deployment
+  namespace: csns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: code-server
+  template:
+    metadata:
+      labels:
+        app: code-server
+    spec:
+      containers:
+      - name: code-server
+        image: linuxserver/code-server:latest
+        ports:
+        - containerPort: 8443
+        env:
+        - name: TZ
+          value: "Asia/Singapore"
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: code-server-secrets
+              key: PASSWORD
+        - name: SUDO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: code-server-secrets
+              key: SUDO_PASSWORD
+        - name: DEFAULT_WORKSPACE
+          value: "/config/workspace"
+        - name: PROXY_DOMAIN
+          value: "code-137.184.249.2.nip.io"
+        volumeMounts:
+        - mountPath: /config/workspace
+          name: workspace-volume
+      volumes:
+      - name: workspace-volume
+        persistentVolumeClaim:
+          claimName: workspace-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: code-server-service
+  namespace: csns
+spec:
+  type: ClusterIP
+  selector:
+    app: code-server
+  ports:
+  - name: web
+    port: 80
+    targetPort: 8443
+
