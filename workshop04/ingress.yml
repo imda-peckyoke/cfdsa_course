@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-data-ingress
+  namespace: minions
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: data-137.184.249.2.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: minio-hsvc
+            port:
+              name: minio-api
+  - host: console-137.184.249.2.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: minio-hsvc
+            port:
+              name: minio-console
